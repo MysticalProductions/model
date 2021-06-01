@@ -14,28 +14,32 @@
   <body>
     <img class="header_logo" src="logo.png"></img>
     <div id="card">
-     <model-viewer 
-      camera-controls src="tilemodel/tile.glb"
-      alt="A 3D model of a tile" 
-      ar camera-orbit="33deg 67deg auto"
-      ios-src="tilemodel/tile.usdz"
-       shadow-intensity="1">
-      <button slot="ar-button" class="ar-button">View in your space</button>
-      <div id="ar-prompt">
-        <img src="https://cdn.khronos.org/assets/blog/live-gltf-asset-editing-in-your-browsereven-in-ar/hand.png">
-      </div>
-    <!-- <div id="control">
-        <label for="diffuse">Style:</label>
-        <select id="diffuse">
-            <option value="https://cdn.glitch.com/2b6d7c24-4155-4cc0-a0e9-25c12a0b0a46%2Fstreet-basecolor.jpg?v=1620646837022">Street
-            </option>
-            <option value="https://cdn.glitch.com/2b6d7c24-4155-4cc0-a0e9-25c12a0b0a46%2Fmidnight-basecolor.jpg?v=1620646837523">
-                Midnight</option>
-            <option value="https://cdn.glitch.com/2b6d7c24-4155-4cc0-a0e9-25c12a0b0a46%2Fbeach-basecolor.jpg?v=1620646837133">Beach
-            </option>
-        </select>
-    </div>-->
-  </model-viewer>
+     <model-viewer id="model-viewer" src="tilemodel/tile.glb" 
+       ar 
+       ar-scale="fixed" 
+       ar-modes="scene-viewer webxr" 
+       camera-controls alt="A 3D model of a Tile" 
+       ios-src="tile/tile.usdz"
+     >
+  <div id="error" class="hide">AR is not supported on this device</div>
+   </model-viewer>
+<style>
+  #error {
+    background-color: #ffffffdd;
+    border-radius: 16px;
+    padding: 16px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    transition: opacity 0.3s;
+  }
+  #error.hide {
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 2s, opacity 1s 1s;
+  }
+</style>
 </div>
 <!--<div id="control">
   <button id="diffuse" value="https://cdn.glitch.com/2b6d7c24-4155-4cc0-a0e9-25c12a0b0a46%2Fstreet-basecolor.jpg?v=1620646837022">Street</button>
@@ -44,22 +48,16 @@
   </div>-->
  </body>
 </html>
-
-<script type="module">
-    const modelViewerTexture = document.querySelector("model-viewer");
-
-    modelViewerTexture.addEventListener("scene-graph-ready", (ev) => {
-
-        let material = modelViewerTexture.model.materials[0];
-
-        document.querySelector('#diffuse').addEventListener('input', (event) => {
-            material.pbrMetallicRoughness.baseColorTexture.texture.source.setURI(event.target.value);
-        });
-
-        document.querySelector("#control").addEventListener('beforexrselect', (ev) => {
-            ev.preventDefault();
-        });
-    })
+<script>
+  document.querySelector("#model-viewer").addEventListener('ar-status', (event) => {
+    if(event.detail.status === 'failed'){
+      const error = document.querySelector("#error");
+      error.classList.remove('hide');
+      error.addEventListener('transitionend',(event) => {
+        error.classList.add('hide');
+      });
+    }
+  });
 </script>
 
 <style>
